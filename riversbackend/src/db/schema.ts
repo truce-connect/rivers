@@ -71,6 +71,18 @@ export const inquiries = pgTable('inquiries', {
   createdAt: timestamp('created_at').defaultNow().notNull(),
 });
 
+export const services = pgTable('services', {
+  id: serial('id').primaryKey(),
+  title: text('title').notNull(),
+  description: text('description').notNull(),
+  price: text('price'),
+  image: text('image').notNull(),
+  icon: text('icon').notNull(),
+  isActive: boolean('is_active').default(true).notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+
 export const insertBookingSchema = z.object({
   fullName: z.string().min(2, 'Full name is required'),
   phone: z.string().min(10, 'Valid phone number is required'),
@@ -119,6 +131,15 @@ export const insertInquirySchema = z.object({
   source: z.string().default('website'),
 });
 
+export const insertServiceSchema = z.object({
+  title: z.string().min(2, 'Title is required'),
+  description: z.string().min(10, 'Description must be at least 10 characters'),
+  price: z.string().optional(),
+  image: z.string().min(1, 'Image is required'),
+  icon: z.string().min(1, 'Icon is required'),
+  isActive: z.boolean().default(true),
+});
+
 export type Booking = typeof bookings.$inferSelect;
 export type InsertBooking = z.infer<typeof insertBookingSchema>;
 export type Payment = typeof payments.$inferSelect;
@@ -129,3 +150,5 @@ export type CustomMenu = typeof customMenus.$inferSelect;
 export type InsertCustomMenu = z.infer<typeof insertCustomMenuSchema>;
 export type Inquiry = typeof inquiries.$inferSelect;
 export type InsertInquiry = z.infer<typeof insertInquirySchema>;
+export type Service = typeof services.$inferSelect;
+export type InsertService = z.infer<typeof insertServiceSchema>;

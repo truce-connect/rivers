@@ -7,6 +7,7 @@ import bookingRoutes from './routes/bookings';
 import paymentRoutes from './routes/payments';
 import menuRoutes from './routes/menus';
 import inquiryRoutes from './routes/inquiries';
+import servicesRoutes from './routes/services';
 import { errorHandler } from './middleware/errorHandler';
 
 const app = express();
@@ -25,11 +26,17 @@ app.use('/api/bookings', bookingRoutes);
 app.use('/api/payments', paymentRoutes);
 app.use('/api/menus', menuRoutes);
 app.use('/api/inquiries', inquiryRoutes);
+app.use('/api/services', servicesRoutes);
 
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, () => {
-  console.log(`🚀 Rivers Kitchen API running on port ${PORT}`);
-});
+// For local development
+if (process.env.NODE_ENV !== 'production') {
+  app.listen(PORT, () => {
+    console.log(`🚀 Rivers Kitchen API running on port ${PORT}`);
+  });
+}
+
+export default app;

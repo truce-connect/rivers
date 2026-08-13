@@ -33,6 +33,11 @@ export const api = {
       method: 'POST',
       body: JSON.stringify(data),
     }),
+  put: <T>(endpoint: string, data?: unknown) =>
+    request<T>(endpoint, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    }),
   patch: <T>(endpoint: string, data?: unknown) =>
     request<T>(endpoint, {
       method: 'PATCH',

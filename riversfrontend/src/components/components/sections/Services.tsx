@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion';
 import { useInView } from 'framer-motion';
-import { useRef } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import {
   Heart,
   Building2,
@@ -12,58 +12,45 @@ import {
   Martini,
   Flame,
   Users,
+  Award,
+  Star,
+  Sparkles,
+  Gift,
+  Music,
+  Camera,
+  Plane,
+  Car,
 } from 'lucide-react';
+import { api } from '@/lib/api';
 
-const services = [
-  {
-    icon: Heart,
-    title: 'Wedding Catering',
-    description: 'Elegant culinary experiences for your special day, from traditional to white weddings.',
-    image: 'https://images.unsplash.com/photo-1519225421980-715cb0215aed?w=600&q=80',
-  },
-  {
-    icon: Building2,
-    title: 'Corporate Catering',
-    description: 'Professional catering for business events, conferences, and corporate gatherings.',
-    image: 'https://images.unsplash.com/photo-1515187029135-18ee286d815b?w=600&q=80',
-  },
-  {
-    icon: Cake,
-    title: 'Birthday Parties',
-    description: 'Celebrate milestones with delicious food that makes your party unforgettable.',
-    image: 'https://images.unsplash.com/photo-1530103862676-de8c9debad1d?w=600&q=80',
-  },
-  {
-    icon: ChefHat,
-    title: 'Private Chef Experience',
-    description: 'Personalized dining experiences with a dedicated chef for intimate gatherings.',
-    image: 'https://images.unsplash.com/photo-1577219491135-ce391730fb2c?w=600&q=80',
-  },
-  {
-    icon: Utensils,
-    title: 'Outdoor Catering',
-    description: 'Full-service outdoor catering for garden parties, beach events, and open-air celebrations.',
-    image: 'https://images.unsplash.com/photo-1555244162-803834f70033?w=600&q=80',
-  },
-  {
-    icon: Martini,
-    title: 'Cocktail & Dessert Bar',
-    description: 'Sophisticated drink stations and dessert bars that elevate any event.',
-    image: 'https://images.unsplash.com/photo-1536935338788-843bb5285307?w=600&q=80',
-  },
-  {
-    icon: Flame,
-    title: 'Live Grilling',
-    description: 'Interactive live cooking stations with professional chefs grilling to perfection.',
-    image: 'https://images.unsplash.com/photo-1556910103-1c02745aae4d?w=600&q=80',
-  },
-  {
-    icon: Users,
-    title: 'Traditional Weddings',
-    description: 'Authentic Nigerian cuisine for traditional marriage ceremonies and cultural events.',
-    image: 'https://images.unsplash.com/photo-1464349153735-7db50ed83c84?w=600&q=80',
-  },
-];
+const iconMap: Record<string, React.ElementType> = {
+  Heart,
+  Building2,
+  Cake,
+  ChefHat,
+  Utensils,
+  Martini,
+  Flame,
+  Users,
+  Award,
+  Star,
+  Sparkles,
+  Gift,
+  Music,
+  Camera,
+  Plane,
+  Car,
+};
+
+interface Service {
+  id: number;
+  title: string;
+  description: string;
+  price?: string;
+  image: string;
+  icon: string;
+  isActive: boolean;
+}
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -89,6 +76,23 @@ const itemVariants = {
 export default function Services() {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, amount: 0.2 });
+  const [services, setServices] = useState<Service[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchServices = async () => {
+      try {
+        const data = await api.get<Service[]>('/services');
+        const activeServices = data.filter(s => s.isActive);
+        setServices(activeServices);
+      } catch (err) {
+        console.error('Failed to fetch services:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchServices();
+  }, []);
 
   return (
     <section
@@ -117,52 +121,63 @@ export default function Services() {
         </motion.div>
 
         {/* Services Grid */}
-        <motion.div
-          variants={containerVariants}
-          initial="hidden"
-          animate={isInView ? 'visible' : 'hidden'}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
-        >
-          {services.map((service, index) => {
-            const Icon = service.icon;
-            return (
-              <motion.div
-                key={service.title}
-                variants={itemVariants}
-                whileHover={{ y: -10, transition: { duration: 0.3 } }}
-                className="group relative overflow-hidden rounded-2xl bg-zinc-800/50 backdrop-blur-sm border border-gold/20 hover:border-gold/50 transition-all duration-300"
-              >
-                {/* Background Image */}
-                <div className="absolute inset-0">
-                  <img
-                    src={service.image}
-                    alt={service.title}
-                    className="w-full h-full object-cover opacity-20 group-hover:opacity-30 transition-opacity duration-300"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/80 to-transparent" />
-                </div>
-
-                {/* Content */}
-                <div className="relative p-6 h-full flex flex-col">
-                  <div className="mb-4">
-                    <div className="w-14 h-14 rounded-full bg-gold/20 flex items-center justify-center mb-4 group-hover:bg-gold/30 transition-colors">
-                      <Icon className="w-7 h-7 text-gold" />
-                    </div>
-                    <h3 className="font-heading text-xl font-semibold text-cream mb-2 group-hover:text-gold transition-colors">
-                      {service.title}
-                    </h3>
+        {loading ? (
+          <div className="text-center py-12">
+            <div className="inline-block w-8 h-8 border-2 border-gold border-t-transparent rounded-full animate-spin" />
+          </div>
+        ) : (
+          <motion.div
+            variants={containerVariants}
+            initial="hidden"
+            animate={isInView ? 'visible' : 'hidden'}
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
+          >
+            {services.map((service, index) => {
+              const Icon = iconMap[service.icon] || Heart;
+              return (
+                <motion.div
+                  key={service.id}
+                  variants={itemVariants}
+                  whileHover={{ y: -10, transition: { duration: 0.3 } }}
+                  className="group relative overflow-hidden rounded-2xl bg-zinc-800/50 backdrop-blur-sm border border-gold/20 hover:border-gold/50 transition-all duration-300"
+                >
+                  {/* Background Image */}
+                  <div className="absolute inset-0">
+                    <img
+                      src={service.image}
+                      alt={service.title}
+                      className="w-full h-full object-cover opacity-20 group-hover:opacity-30 transition-opacity duration-300"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/80 to-transparent" />
                   </div>
-                  <p className="text-cream/70 text-sm leading-relaxed flex-grow">
-                    {service.description}
-                  </p>
-                </div>
 
-                {/* Hover Effect */}
-                <div className="absolute inset-0 border-2 border-gold/0 group-hover:border-gold/50 rounded-2xl transition-all duration-300 pointer-events-none" />
-              </motion.div>
-            );
-          })}
-        </motion.div>
+                  {/* Content */}
+                  <div className="relative p-6 h-full flex flex-col">
+                    <div className="mb-4">
+                      <div className="w-14 h-14 rounded-full bg-gold/20 flex items-center justify-center mb-4 group-hover:bg-gold/30 transition-colors">
+                        <Icon className="w-7 h-7 text-gold" />
+                      </div>
+                      <h3 className="font-heading text-xl font-semibold text-cream mb-2 group-hover:text-gold transition-colors">
+                        {service.title}
+                      </h3>
+                    </div>
+                    <p className="text-cream/70 text-sm leading-relaxed flex-grow">
+                      {service.description}
+                    </p>
+                    {service.price && (
+                      <p className="text-gold font-button font-semibold mt-3">
+                        From {service.price}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Hover Effect */}
+                  <div className="absolute inset-0 border-2 border-gold/0 group-hover:border-gold/50 rounded-2xl transition-all duration-300 pointer-events-none" />
+                </motion.div>
+              );
+            })}
+          </motion.div>
+        )}
       </div>
     </section>
   );
