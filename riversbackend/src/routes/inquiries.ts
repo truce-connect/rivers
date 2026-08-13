@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { db } from '../db';
 import { inquiries, insertInquirySchema } from '../db/schema';
 import { sendWhatsAppNotification, sendEmailNotification } from '../services/notifications';
-import { desc } from 'drizzle-orm';
+import { desc, eq } from 'drizzle-orm';
 
 const router = express.Router();
 
@@ -17,11 +17,9 @@ const createInquirySchema = insertInquirySchema.extend({
 router.post('/', async (req, res) => {
   try {
     const validatedData = createInquirySchema.parse(req.body);
-    const now = new Date().toISOString();
 
     const [inquiry] = await db.insert(inquiries).values({
       ...validatedData,
-      createdAt: now,
     }).returning();
 
     await sendWhatsAppNotification({

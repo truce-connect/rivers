@@ -7,7 +7,7 @@ export const bookings = pgTable('bookings', {
   phone: text('phone').notNull(),
   email: text('email').notNull(),
   eventType: text('event_type').notNull(),
-  eventDate: timestamp('event_date').notNull(),
+  eventDate: text('event_date').notNull(),
   guestCount: text('guest_count').notNull(),
   location: text('location').notNull(),
   budget: text('budget'),
@@ -50,7 +50,7 @@ export const menuPackages = pgTable('menu_packages', {
 export const customMenus = pgTable('custom_menus', {
   id: serial('id').primaryKey(),
   sessionId: text('session_id').notNull(),
-  items: json('items').notNull(),
+  items: json('items'),
   total: integer('total').notNull(),
   estimatedGuests: integer('estimated_guests'),
   contactInfo: json('contact_info'),
@@ -115,7 +115,7 @@ export const insertMenuPackageSchema = z.object({
 
 export const insertCustomMenuSchema = z.object({
   sessionId: z.string().min(1, 'Session ID is required'),
-  items: z.any(),
+  items: z.any().optional(),
   total: z.number().nonnegative('Total must be non-negative'),
   estimatedGuests: z.number().int().positive().optional(),
   contactInfo: z.any().optional(),

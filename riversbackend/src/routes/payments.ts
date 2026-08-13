@@ -82,14 +82,14 @@ router.post('/webhook', express.raw({ type: 'application/json' }), async (req, r
       if (payment && payment.status === 'pending') {
         await db.update(payments).set({
           status: 'success',
-          paidAt: new Date().toISOString(),
+          paidAt: new Date(),
           gatewayResponse: JSON.stringify(event),
         }).where(eq(payments.id, payment.id));
 
         await db.update(bookings).set({
           paymentStatus: 'paid',
           status: 'confirmed',
-          updatedAt: new Date().toISOString(),
+          updatedAt: new Date(),
         }).where(eq(bookings.id, payment.bookingId));
       }
     }

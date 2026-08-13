@@ -33,12 +33,9 @@ router.get('/packages/:id', async (req, res) => {
 router.post('/custom', async (req, res) => {
   try {
     const validatedData = insertCustomMenuSchema.parse(req.body);
-    const now = new Date().toISOString();
 
     const [customMenu] = await db.insert(customMenus).values({
       ...validatedData,
-      createdAt: now,
-      updatedAt: now,
     }).returning();
 
     res.status(201).json({
@@ -80,7 +77,7 @@ router.post('/custom/:sessionId/convert', async (req, res) => {
     await db.update(customMenus).set({
       status: 'converted',
       contactInfo: JSON.stringify(contactInfo),
-      updatedAt: new Date().toISOString(),
+      updatedAt: new Date(),
     }).where(eq(customMenus.id, latestMenu.id));
 
     res.json({

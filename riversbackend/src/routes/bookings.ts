@@ -42,8 +42,6 @@ router.post('/', async (req, res) => {
     const now = new Date().toISOString();
     const [newBooking] = await db.insert(bookings).values({
       ...validatedData,
-      createdAt: now,
-      updatedAt: now,
     }).returning();
 
     await sendWhatsAppNotification({
@@ -87,7 +85,7 @@ router.patch('/:id/status', async (req, res) => {
 
     const [updated] = await db.update(bookings).set({
       status,
-      updatedAt: new Date().toISOString(),
+      updatedAt: new Date(),
     }).where(eq(bookings.id, id)).returning();
 
     if (!updated) {

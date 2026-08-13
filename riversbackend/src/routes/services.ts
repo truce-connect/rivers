@@ -33,12 +33,9 @@ router.get('/:id', async (req, res) => {
 router.post('/', async (req, res) => {
   try {
     const validatedData = insertServiceSchema.parse(req.body);
-    const now = new Date().toISOString();
 
     const [newService] = await db.insert(services).values({
       ...validatedData,
-      createdAt: now,
-      updatedAt: now,
     }).returning();
 
     res.status(201).json({
@@ -62,7 +59,7 @@ router.put('/:id', async (req, res) => {
 
     const [updated] = await db.update(services).set({
       ...validatedData,
-      updatedAt: new Date().toISOString(),
+      updatedAt: new Date(),
     }).where(eq(services.id, id)).returning();
 
     if (!updated) {
